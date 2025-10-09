@@ -157,6 +157,8 @@ namespace NZWalks.API.Controllers
                 RegionImageUrl = regionDomainModel.RegionImageUrl
             };
 
+            //Test commit connection 101025
+
             return Ok(regionDto);
         }
     }
