@@ -117,7 +117,7 @@ namespace NZWalks.API.Controllers
             regionDomainModel.Name = updateRegionRequestDto.Name;
             regionDomainModel.RegionImageUrl = updateRegionRequestDto.RegionImageUrl;
             _dbContext.SaveChanges();
-            
+
             // Map Domain model back to DTO
             var regionDto = new Models.DTO.RegionDto
             {
@@ -130,5 +130,34 @@ namespace NZWalks.API.Controllers
             return Ok(regionDto);
         }
 
+        // Delete region
+        // DELETE: api/regions/{id}
+        [HttpDelete]
+        [Route("{id:Guid}")]
+        public IActionResult Delete([FromRoute] Guid id)
+        {
+            // Check if region exists
+            var regionDomainModel = _dbContext.Regions.FirstOrDefault(x => x.Id == id);
+            if (regionDomainModel == null)
+            {
+                return NotFound();
+            }
+
+            // Delete region
+            _dbContext.Regions.Remove(regionDomainModel);
+            _dbContext.SaveChanges();
+
+            // Map Domain model back to DTO
+            var regionDto = new Models.DTO.RegionDto
+            {
+                Id = regionDomainModel.Id,
+                Code = regionDomainModel.Code,
+                Name = regionDomainModel.Name,
+                RegionImageUrl = regionDomainModel.RegionImageUrl
+            };
+
+            return Ok(regionDto);
+
+        }
     }
 }
