@@ -5,36 +5,59 @@ namespace NZWalks.API.Repositories
 {
     public class SQLRegionRepository : IRegionRepository
     {
-        private readonly NZWalksDbContext dbContext;
+        private readonly NZWalksDbContext _dbContext;
         
         public SQLRegionRepository(NZWalksDbContext dbContext)
         {
-            this.dbContext = dbContext;
+            _dbContext = dbContext;
         }
 
         public async Task<List<Models.Domain.Region>> GetAllAsync()
         {
-            return await dbContext.Regions.ToListAsync();
+            return await _dbContext.Regions.ToListAsync();
         }
 
-        /*
-        public Task<Models.Domain.Region> CreateAsync(Models.Domain.Region region)
+        public async Task<Models.Domain.Region?> GetByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
-        }
-        public Task<Models.Domain.Region> DeleteAsync(Guid id)
-        {
-            throw new NotImplementedException();
+            return await _dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public Task<Models.Domain.Region> GetByIdAsync(Guid id)
+        public async Task<Models.Domain.Region?> CreateAsync(Models.Domain.Region region)
         {
-            throw new NotImplementedException();
+            await _dbContext.Regions.AddAsync(region);
+            await _dbContext.SaveChangesAsync();
+            return region;
         }
-        public Task<Models.Domain.Region> UpdateAsync(Guid id, Models.Domain.Region region)
+
+        public async Task<Models.Domain.Region?> UpdateAsync(Guid id, Models.Domain.Region region)
         {
-            throw new NotImplementedException();
+            var existingRegion = await _dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
+            if (existingRegion == null)
+            {
+                return null;
+            }
+
+            existingRegion.Code = region.Code;
+            existingRegion.Name = region.Name;
+            existingRegion.RegionImageUrl = region.RegionImageUrl;
+
+            await _dbContext.SaveChangesAsync();
+            return existingRegion;
         }
-        */
+
+        public async Task<Models.Domain.Region?> DeleteAsync(Guid id)
+        {
+            // Check if region exists
+            var existingRegion = await _dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
+            if (existingRegion == null)
+            {
+                return null;
+            }
+
+            // Delete region
+            _dbContext.Regions.Remove(existingRegion);
+            await _dbContext.SaveChangesAsync();
+            return existingRegion;
+        }
     }
 }
