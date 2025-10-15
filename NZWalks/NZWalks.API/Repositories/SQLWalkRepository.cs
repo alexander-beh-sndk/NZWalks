@@ -27,5 +27,34 @@ namespace NZWalks.API.Repositories
         {
             return await _dbContext.Walks.Include(w => w.Difficulty).Include(w => w.Region).FirstOrDefaultAsync(x => x.Id == id);
         }
+
+        public async Task<Models.Domain.Walk?> UpdateAsync(Guid id, Models.Domain.Walk walk)
+        {
+            var existingWalk = await _dbContext.Walks.FirstOrDefaultAsync(x => x.Id == id);
+            if (existingWalk == null)
+            {
+                return null;
+            }
+            existingWalk.Name = walk.Name;
+            existingWalk.Description = walk.Description;
+            existingWalk.LengthInKm = walk.LengthInKm;
+            existingWalk.WalkImageUrl = walk.WalkImageUrl;
+            existingWalk.RegionId = walk.RegionId;
+            existingWalk.DifficultyId = walk.DifficultyId;
+            await _dbContext.SaveChangesAsync();
+            return existingWalk;
+        }
+
+        public async Task<Models.Domain.Walk?> DeleteAsync(Guid id)
+        {
+            var existingWalk = await _dbContext.Walks.FirstOrDefaultAsync(x => x.Id == id);
+            if (existingWalk == null)
+            {
+                return null;
+            }
+            _dbContext.Walks.Remove(existingWalk);
+            await _dbContext.SaveChangesAsync();
+            return existingWalk;
+        }
     }
 }
