@@ -20,7 +20,12 @@ namespace NZWalks.API.Repositories
 
         public async Task<List<Models.Domain.Walk>> GetAllAsync()
         {
-            return await _dbContext.Walks.ToListAsync();
+            return await _dbContext.Walks.Include(w => w.Difficulty).Include(w => w.Region).ToListAsync();
+        }
+
+        public async Task<Models.Domain.Walk?> GetByIdAsync(Guid id)
+        {
+            return await _dbContext.Walks.Include(w => w.Difficulty).Include(w => w.Region).FirstOrDefaultAsync(x => x.Id == id);
         }
     }
 }
