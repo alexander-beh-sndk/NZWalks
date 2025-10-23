@@ -18,32 +18,39 @@ namespace NZWalks.API.Repositories
             return walk;
         }
 
-        public async Task<List<Models.Domain.Walk>> GetAllAsync(string? filterOn = null, string? filterQuery = null)
+        public async Task<List<Models.Domain.Walk>> GetAllAsync(string? filterOn = null, string? filterQuery = null, 
+            string? sortBy = null, bool? isAscending = null)
         {
-            //return await _dbContext.Walks.Include(w => w.Difficulty).Include(w => w.Region).ToListAsync();
             var walks = _dbContext.Walks.Include(w => w.Difficulty).Include(w => w.Region).AsQueryable();
 
+            // Filtering
             if (!string.IsNullOrEmpty(filterOn) && !string.IsNullOrEmpty(filterQuery))
             {
                 if (filterOn.Equals("Name", StringComparison.OrdinalIgnoreCase))
                 {
                     walks = walks.Where(w => w.Name.Contains(filterQuery));
                 }
-                /*
-                else if (filterOn.Equals("Description", StringComparison.OrdinalIgnoreCase))
+            }
+
+            // Sorting
+            if (!string.IsNullOrEmpty(sortBy))
+            {
+                if (sortBy.Equals("Name", StringComparison.OrdinalIgnoreCase))
                 {
-                    walks = walks.Where(w => w.Description.Contains(filterQuery));
+                    walks = isAscending.HasValue && isAscending.Value
+                        ? walks.OrderBy(w => w.Name)
+                        : walks.OrderByDescending(w => w.Name);
                 }
-                else
+                else if (sortBy.Equals("Length", StringComparison.OrdinalIgnoreCase))
                 {
-                    return await walks.ToListAsync();
+                    walks = isAscending.HasValue && isAscending.Value
+                        ? walks.OrderBy(w => w.LengthInKm)
+                        : walks.OrderByDescending(w => w.LengthInKm);
                 }
-                */
-                // Apply filtering logic based on filterOn and filterQuery
-                //walks = walks.Where(w => EF.Property<string>(w, filterOn).Contains(filterQuery));
             }
 
             return await walks.ToListAsync();
+            //return await _dbContext.Walks.Include(w => w.Difficulty).Include(w => w.Region).ToListAsync();
         }
 
         public async Task<Models.Domain.Walk?> GetByIdAsync(Guid id)
