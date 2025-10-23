@@ -8,6 +8,7 @@ using NZWalks.API.Models.DTO;
 using Microsoft.EntityFrameworkCore;
 using NZWalks.API.Repositories;
 using AutoMapper;
+using NZWalks.API.CustomActionFilters;
 
 namespace NZWalks.API.Controllers
 {
@@ -56,13 +57,9 @@ namespace NZWalks.API.Controllers
         // POST TO Create new region
         // POST: api/regions
         [HttpPost]
+        [ValidateModel]
         public async Task<IActionResult> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             // Map DTO to Domain model
             var regionDomainModel = _mapper.Map<Region>(addRegionRequestDto);
 
@@ -84,13 +81,9 @@ namespace NZWalks.API.Controllers
         // Put: api/regions/{id}
         [HttpPut]
         [Route("{id:Guid}")]
+        [ValidateModel]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] Models.DTO.UpdateRegionRequestDto updateRegionRequestDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             // Map DTO to Domain model
             var regionDomainModel = _mapper.Map<Region>(updateRegionRequestDto);
 
