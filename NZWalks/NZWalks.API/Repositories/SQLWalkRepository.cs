@@ -18,9 +18,32 @@ namespace NZWalks.API.Repositories
             return walk;
         }
 
-        public async Task<List<Models.Domain.Walk>> GetAllAsync()
+        public async Task<List<Models.Domain.Walk>> GetAllAsync(string? filterOn = null, string? filterQuery = null)
         {
-            return await _dbContext.Walks.Include(w => w.Difficulty).Include(w => w.Region).ToListAsync();
+            //return await _dbContext.Walks.Include(w => w.Difficulty).Include(w => w.Region).ToListAsync();
+            var walks = _dbContext.Walks.Include(w => w.Difficulty).Include(w => w.Region).AsQueryable();
+
+            if (!string.IsNullOrEmpty(filterOn) && !string.IsNullOrEmpty(filterQuery))
+            {
+                if (filterOn.Equals("Name", StringComparison.OrdinalIgnoreCase))
+                {
+                    walks = walks.Where(w => w.Name.Contains(filterQuery));
+                }
+                /*
+                else if (filterOn.Equals("Description", StringComparison.OrdinalIgnoreCase))
+                {
+                    walks = walks.Where(w => w.Description.Contains(filterQuery));
+                }
+                else
+                {
+                    return await walks.ToListAsync();
+                }
+                */
+                // Apply filtering logic based on filterOn and filterQuery
+                //walks = walks.Where(w => EF.Property<string>(w, filterOn).Contains(filterQuery));
+            }
+
+            return await walks.ToListAsync();
         }
 
         public async Task<Models.Domain.Walk?> GetByIdAsync(Guid id)
