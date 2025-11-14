@@ -12,7 +12,7 @@ namespace NZWalks.API.Controllers
         [HttpGet]
         public IActionResult GetAllStudents()         
         {
-            string[] studentNames = new string[] { "John", "Jane", "Jack" };
+            string[] studentNames = new string[] { "John", "Jane", "Jack", "Alex" };
 
             return Ok(studentNames);
         }
